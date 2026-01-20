@@ -1,0 +1,138 @@
+
+<html>
+        <head>  
+            <meta http-equiv="X-UA-Compatible" content="IE=9; text/html; charset=utf-8"/> 
+            <title id="sekundes1">SKALA: 60s</title>
+			<link rel="stylesheet" href="include/styles.css">
+        </head>
+        <body id="body1">
+
+<script type="text/javascript" src="include/jquery-1.11.1.min.js"></script>
+ 
+		 <script type="text/javascript">
+
+   //padaro nepasiekiamus tinkamus mygtukus kai parefresini arba uzkrauni per nauja dokumenta    
+	   $(document).ready(function () {
+				pazymeti();
+				$('#pirmas1').focus();
+				j=60;
+				setInterval(function() {
+					j=j-1;
+					$("#sekundes").text(j);
+					$("#sekundes1").text('SKALA: '.concat(j).concat('s'));
+					if (j<=0){
+					cache_clear()
+					}
+					}, 1000);
+					
+					
+			$('#grupe').change(function () {
+
+				   $.ajax({
+                    method: 'POST',
+                    url: "include/duomenys.php",
+                    data: {'grupes': $('#grupe').val()},
+                    dataType: "json",
+                    success: function (data) {
+                    $("#uzduotys").empty();  	
+                    	var content = "<tr><th>Eil.Nr.</th><th>Darbo ID</th><th>Pasirinkimas</th><th>Darbo kodas</th><th>Darbo pavadinimas</th></tr>";
+                    	
+                        $.each(data, function(i, item) { 
+								 	k=i+1;
+		 							content += '<tr><td>' +  k + '</td>';
+									content +='<td>' + item['Id_darbai'] + '</td>';
+									content +='<td>' + '<input type="button" value="Įkelti darbą" name="' + item["Darbo_ID_NR"] + ' " onclick="myFunction(this)">'  + '</td>';
+									content +='<td>' + item['Darbo_ID_NR'] + '</td>';
+									content +='<td>' + item['Darb_pav'] + '</td></tr>';
+                        });
+                        $('#uzduotys').append(content);
+                    }
+                });
+
+            });
+        });
+		function cache_clear() {
+			window.location.reload(true);
+			// window.location.reload(); use this if you do not remove cache
+		}
+		function pazymeti() {
+		     $.ajax({
+                    method: 'POST',
+                    url: "include/duomenys.php",
+                    data: {'darbuotojas': $('#pirmas').val()},
+                    dataType: "json",
+                    success: function (data) {
+                        $.each(data, function(i, item) {
+							if(item==1){
+								$('#'.concat(i)).prop('disabled', true);
+							}
+							else{
+								$('#'.concat(i)).prop('disabled', false);
+							}
+                        });
+                    }
+                });
+		}
+  //padaro nepasiekiamus tinkamus mygtukus kai kai pasirenki zmogu    
+		 $(document).ready(function () {
+            $('#pirmas1').change(function () {
+				if ($('#pirmas').val()==0)
+				{
+                $.ajax({
+                    method: 'POST',
+                    url: "include/duomenys.php",
+                    data: {'Kodas_darbuotojas': $('#pirmas1').val()},
+                    dataType: "json",
+                    success: function (data) {
+							if(data[0]==0){
+								$("#Klaida").text('Tokio vartotojo nėra');
+								document.getElementById("pirmas1").value = '';
+							}
+							else{
+								document.getElementById("pirmas1").value = '';
+								$("#Klaida").text('');
+								$('#pirmas').val(data[0]);
+								pazymeti();
+						
+							}
+                  
+                    }
+                });
+				
+				}
+            });
+			 $('#pirmas').change(function () {
+				pazymeti();
+            });
+        });
+
+
+		
+		function myFunction(reiksme) {
+			document.getElementById("1").value = reiksme.name;
+			 document.body.scrollTop = 0; // For Safari
+			document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+
+} 
+
+
+
+
+
+
+
+
+
+    </script>
+
+﻿Puslapis persikraus po <font id="sekundes" color="red">60</font>s</br><div class="container"><form method="post">  <div class="row"><B>Forma skeneriui</B></br></div>  <div class="row"><div class="col-75"><input id="pirmas1" type="text" name="skenerio" value=""></div><div class="col-25"><input id="8" type="submit" value=">>>>" name="skeneriui"></br></div></div>  <div class="row"><B>Forma Žmogui</B></br>Pasirinkti darbuotoją:<br></div>  <div class="row"><select id="pirmas" name="darbuotojas"><option value="0">Pasirinkite darbuotoją</option><option value="1" >001 | DAKR</option><option value="3" >003 | PAJA</option><option value="7" >007 | VIPL</option><option value="8" >008 | EDGA</option><option value="9" >009 | SIM</option></select></div><font id="Klaida" color="red"></font><br>  <div class="row">Darbo kodas:<br/></div>  <div class="row"><div class="col-75"><input id="1" type="text" name="Darbo_ID_NR" value=""></div><div class="col-25"><input id="6" type="submit" value="Pradėti užduotį" name="pradetiU"></div></div>  <div class="row"><div class="col-25"><input id="2" type="submit" value="Pradėti darbo dieną" name="pradetiD"></div><div class="col-25"><input id="3" type="submit" value="Baigti darbo dieną" name="baigtiD"></div><div class="col-25"><input id="4" type="submit" value="Pristabdyti užduotį" name="darbasB"></div><div class="col-25"><input id="5" type="submit" value="Atšaukti" name="atsaukti"></div></div></br><input type="button" value="Kelionė" name="DB-0001 " onclick="myFunction(this)">  <input type="button" value="Buhalterija" name="DU-0009 " onclick="myFunction(this)">  <input type="button" value="JONAVOS" name="DU-0007 " onclick="myFunction(this)">  <input type="button" value="SBE" name="DS-0004 " onclick="myFunction(this)">  </form><a href="http://88.222.25.147/skala/aprasymas.php">Kodų aprašymas</a></div><H3>Apjungtos lenteles:</H3><table border='1'><tr><th>Darbuotojas</th><th>Darbo pr. laikas</th><th>Skirtumas</th><th>Užduoties Kodas</th><th>Užd. Pavadinimas</th><th>Užduoties pr. laikas</th><th>Skirtumas</th></tr></table> <br><H3>Paskutiniai darbai buvo:</H3>  <div class="row">Pasirinkti darbu grupe:<br><select id="grupe" name="grupes"><option value="0">Pasirinkite grupe</option><option value="DS" >DS | DIAC Servisas</option><option value="DPS" >DPS | DIAC Projektai pardavimui Serijiniai</option><option value="DPV" >DPV | DIAC Projektai pardavimui Vienetiniai</option><option value="DTI" >DTI | DIAC technologinė įranga</option><option value="DMP" >DMP | DIAC marketingo ir pardavimų infrastruktūra</option><option value="DU" >DU | DIAC Ūkio darbai</option><option value="DV" >DV | DIAC Vizija</option><option value="DB" >DB | DIAC Bendri darbai netinkantys jokiai kitai kategorijai</option><option value="LSV" >LSV | DIAC labai seni vienkartiniai darbai NENAUDOTI!</option><option value="DP" >DP | DIAC Projektai SENAS</option><option value="GRA" >GRA | </option><option value="" > | </option><option value="Banionio kepykla" >Banionio kepykla | </option><option value="JONAVA" >JONAVA | </option><option value=" linkedln " > linkedln  | </option><option value="Banionio Ūkis" >Banionio Ūkis | </option><option value="DIAC14 03.00.009" >DIAC14 03.00.009 | </option><option value="DIAC14 05.03.001" >DIAC14 05.03.001 | </option><option value="DIAC14 05.01.006" >DIAC14 05.01.006 | </option><option value="DIAC14 05.01.005" >DIAC14 05.01.005 | </option><option value="DIAC14 05.02.004" >DIAC14 05.02.004 | </option><option value="DIAC14 05.01.004" >DIAC14 05.01.004 | </option><option value="DIAC14 05.03.004" >DIAC14 05.03.004 | </option><option value="DIAC14 03.04.001" >DIAC14 03.04.001 | </option><option value="DIAC14 07.00.001" >DIAC14 07.00.001 | </option><option value="DIAC14 01.02.000" >DIAC14 01.02.000 | </option><option value="Banionis" >Banionis | </option><option value="DIAC15 07.02.00.002" >DIAC15 07.02.00.002 | </option><option value="DIAC15 07.0200.03" >DIAC15 07.0200.03 | </option><option value="Siena" >Siena | </option><option value="DIAC15 02.01.0.011" >DIAC15 02.01.0.011 | </option><option value="DIAC15 06.02.02.002" >DIAC15 06.02.02.002 | </option><option value="DIAC15 07.00.00.007" >DIAC15 07.00.00.007 | </option><option value="DIAC15 07.0000.003" >DIAC15 07.0000.003 | </option><option value="Banionio ūkis panakotos išpilstymas detalių gamyba" >Banionio ūkis panakotos išpilstymas detalių gamyba | </option><option value="Ban" >Ban | </option><option value="Borunos dulkiu nusiurbimas" >Borunos dulkiu nusiurbimas | </option></select></div><table id='uzduotys'  border='1'><tr><th>Eil.Nr.</th><th>Darbuotojas</th><th>Pasirinkimas</th><th>Darbo kodas</th><th>Darbo pavadinimas</th></tr><tr><td>1</td><td><B>003   |   PAJA</B></td><td><input type="button" value="Įkelti darbą" name="DS-0014.1 " onclick="myFunction(this)"></td><td>DS-0014.1</td><td>Borunos servisas</td></tr><tr><td>2</td><td><B>001   |   DAKR</B></td><td><input type="button" value="Įkelti darbą" name="Banionio Ūkis " onclick="myFunction(this)"></td><td>Banionio Ūkis</td><td></td></tr><tr><td>3</td><td><B>003   |   PAJA</B></td><td><input type="button" value="Įkelti darbą" name="Borunos dulkiu nusiurbimas " onclick="myFunction(this)"></td><td>Borunos dulkiu nusiurbimas</td><td>DS-0014</td></tr><tr><td>4</td><td><B>003   |   PAJA</B></td><td><input type="button" value="Įkelti darbą" name="Siena " onclick="myFunction(this)"></td><td>Siena</td><td></td></tr><tr><td>5</td><td><B>001   |   DAKR</B></td><td><input type="button" value="Įkelti darbą" name="DB-0001 " onclick="myFunction(this)"></td><td>DB-0001</td><td>Kelionė</td></tr><tr><td>6</td><td><B>003   |   PAJA</B></td><td><input type="button" value="Įkelti darbą" name="DPS-0006.3 " onclick="myFunction(this)"></td><td>DPS-0006.3</td><td>Banionio ūkis panakotos išpilstymas Automatika</td></tr><tr><td>7</td><td><B>003   |   PAJA</B></td><td><input type="button" value="Įkelti darbą" name="DU-0009.01 " onclick="myFunction(this)"></td><td>DU-0009.01</td><td>buhalterine programa</td></tr><tr><td>8</td><td><B>008   |   EDGA</B></td><td><input type="button" value="Įkelti darbą" name="DPS-0006.2 " onclick="myFunction(this)"></td><td>DPS-0006.2</td><td> Banionio ūkis panakotos išpilstymas detalių gamyba</td></tr><tr><td>9</td><td><B>001   |   DAKR</B></td><td><input type="button" value="Įkelti darbą" name="Banionio kepykla " onclick="myFunction(this)"></td><td>Banionio kepykla</td><td></td></tr><tr><td>10</td><td><B>001   |   DAKR</B></td><td><input type="button" value="Įkelti darbą" name="Ban " onclick="myFunction(this)"></td><td>Ban</td><td></td></tr><tr><td>11</td><td><B>003   |   PAJA</B></td><td><input type="button" value="Įkelti darbą" name="DS-0013 " onclick="myFunction(this)"></td><td>DS-0013</td><td>Kornita</td></tr><tr><td>12</td><td><B>001   |   DAKR</B></td><td><input type="button" value="Įkelti darbą" name="DU-0007 " onclick="myFunction(this)"></td><td>DU-0007</td><td>JONAVOS darbai</td></tr><tr><td>13</td><td><B>003   |   PAJA</B></td><td><input type="button" value="Įkelti darbą" name="DS-0004 " onclick="myFunction(this)"></td><td>DS-0004</td><td>SBE darbai</td></tr><tr><td>14</td><td><B>009   |   SIM</B></td><td><input type="button" value="Įkelti darbą" name="Banionio ūkis panakotos išpilstymas detalių gamyba " onclick="myFunction(this)"></td><td>Banionio ūkis panakotos išpilstymas detalių gamyba</td><td></td></tr><tr><td>15</td><td><B>003   |   PAJA</B></td><td><input type="button" value="Įkelti darbą" name="DTI-0008.01 " onclick="myFunction(this)"></td><td>DTI-0008.01</td><td>Staklių retrofit cherson</td></tr><tr><td>16</td><td><B>003   |   PAJA</B></td><td><input type="button" value="Įkelti darbą" name="DIAC15 07.0000.003 " onclick="myFunction(this)"></td><td>DIAC15 07.0000.003</td><td></td></tr><tr><td>17</td><td><B>003   |   PAJA</B></td><td><input type="button" value="Įkelti darbą" name="DIAC15 07.00.00.007 " onclick="myFunction(this)"></td><td>DIAC15 07.00.00.007</td><td></td></tr><tr><td>18</td><td><B>003   |   PAJA</B></td><td><input type="button" value="Įkelti darbą" name="DIAC15 06.02.02.002 " onclick="myFunction(this)"></td><td>DIAC15 06.02.02.002</td><td></td></tr><tr><td>19</td><td><B>003   |   PAJA</B></td><td><input type="button" value="Įkelti darbą" name="DIAC15 02.01.0.011 " onclick="myFunction(this)"></td><td>DIAC15 02.01.0.011</td><td></td></tr><tr><td>20</td><td><B>003   |   PAJA</B></td><td><input type="button" value="Įkelti darbą" name=" " onclick="myFunction(this)"></td><td></td><td></td></tr><tr><td>21</td><td><B>003   |   PAJA</B></td><td><input type="button" value="Įkelti darbą" name="DIAC15 07.0200.03 " onclick="myFunction(this)"></td><td>DIAC15 07.0200.03</td><td></td></tr><tr><td>22</td><td><B>003   |   PAJA</B></td><td><input type="button" value="Įkelti darbą" name="DIAC15 07.02.00.002 " onclick="myFunction(this)"></td><td>DIAC15 07.02.00.002</td><td></td></tr><tr><td>23</td><td><B>009   |   SIM</B></td><td><input type="button" value="Įkelti darbą" name="DPS-0006.01 " onclick="myFunction(this)"></td><td>DPS-0006.01</td><td>Vakuuminio dozatoriaus projektavimas</td></tr><tr><td>24</td><td><B>001   |   DAKR</B></td><td><input type="button" value="Įkelti darbą" name="DPS-0004 " onclick="myFunction(this)"></td><td>DPS-0004</td><td>Banionio ūkis panakotos išpilstymas</td></tr><tr><td>25</td><td><B>001   |   DAKR</B></td><td><input type="button" value="Įkelti darbą" name="DU-0005.02 " onclick="myFunction(this)"></td><td>DU-0005.02</td><td>Patalpų įrengimas</td></tr><tr><td>26</td><td><B>001   |   DAKR</B></td><td><input type="button" value="Įkelti darbą" name="DPS-0005.06 " onclick="myFunction(this)"></td><td>DPS-0005.06</td><td> Dokumantacija</td></tr><tr><td>27</td><td><B>001   |   DAKR</B></td><td><input type="button" value="Įkelti darbą" name="Banionis " onclick="myFunction(this)"></td><td>Banionis</td><td></td></tr><tr><td>28</td><td><B>003   |   PAJA</B></td><td><input type="button" value="Įkelti darbą" name="DPS-0005.05 " onclick="myFunction(this)"></td><td>DPS-0005.05</td><td>Automatikos projektavimas</td></tr><tr><td>29</td><td><B>008   |   EDGA</B></td><td><input type="button" value="Įkelti darbą" name="DPS-0005.04 " onclick="myFunction(this)"></td><td>DPS-0005.04</td><td>Nando svėrimo gamyba</td></tr><tr><td>30</td><td><B>006   |   AGKI</B></td><td><input type="button" value="Įkelti darbą" name="DMP-0006.04 " onclick="myFunction(this)"></td><td>DMP-0006.04</td><td> laiškai</td></tr><tr><td>31</td><td><B>008   |   EDGA</B></td><td><input type="button" value="Įkelti darbą" name="DTI-0008.02 " onclick="myFunction(this)"></td><td>DTI-0008.02</td><td>Staklių retrofit gręžimo staklės</td></tr><tr><td>32</td><td><B>003   |   PAJA</B></td><td><input type="button" value="Įkelti darbą" name="DTI-0009 " onclick="myFunction(this)"></td><td>DTI-0009</td><td>Taškinio suvirinimo aparatas</td></tr><tr><td>33</td><td><B>009   |   SIM</B></td><td><input type="button" value="Įkelti darbą" name="DMP-0007 " onclick="myFunction(this)"></td><td>DMP-0007</td><td> Prekių dokumentacija ir specifikacijos</td></tr><tr><td>34</td><td><B>001   |   DAKR</B></td><td><input type="button" value="Įkelti darbą" name="DPS-0005.02 " onclick="myFunction(this)"></td><td>DPS-0005.02</td><td> Komponentų užsakymai</td></tr><tr><td>35</td><td><B>008   |   EDGA</B></td><td><input type="button" value="Įkelti darbą" name="DIAC14 01.02.000 " onclick="myFunction(this)"></td><td>DIAC14 01.02.000</td><td></td></tr><tr><td>36</td><td><B>008   |   EDGA</B></td><td><input type="button" value="Įkelti darbą" name="DIAC14 07.00.001 " onclick="myFunction(this)"></td><td>DIAC14 07.00.001</td><td></td></tr><tr><td>37</td><td><B>008   |   EDGA</B></td><td><input type="button" value="Įkelti darbą" name="DIAC14 03.04.001 " onclick="myFunction(this)"></td><td>DIAC14 03.04.001</td><td></td></tr><tr><td>38</td><td><B>001   |   DAKR</B></td><td><input type="button" value="Įkelti darbą" name="DPS-0005.01 " onclick="myFunction(this)"></td><td>DPS-0005.01</td><td> Nando dozatoriaus projektavimas</td></tr><tr><td>39</td><td><B>008   |   EDGA</B></td><td><input type="button" value="Įkelti darbą" name="DIAC14 05.03.004 " onclick="myFunction(this)"></td><td>DIAC14 05.03.004</td><td></td></tr><tr><td>40</td><td><B>008   |   EDGA</B></td><td><input type="button" value="Įkelti darbą" name="DIAC14 05.01.004 " onclick="myFunction(this)"></td><td>DIAC14 05.01.004</td><td></td></tr><tr><td>41</td><td><B>008   |   EDGA</B></td><td><input type="button" value="Įkelti darbą" name="DIAC14 05.02.004 " onclick="myFunction(this)"></td><td>DIAC14 05.02.004</td><td></td></tr><tr><td>42</td><td><B>008   |   EDGA</B></td><td><input type="button" value="Įkelti darbą" name="DIAC14 05.01.005 " onclick="myFunction(this)"></td><td>DIAC14 05.01.005</td><td></td></tr><tr><td>43</td><td><B>001   |   DAKR</B></td><td><input type="button" value="Įkelti darbą" name="DMP-0004 " onclick="myFunction(this)"></td><td>DMP-0004</td><td>Renderiai puslapiui</td></tr><tr><td>44</td><td><B>008   |   EDGA</B></td><td><input type="button" value="Įkelti darbą" name="DIAC14 05.01.006 " onclick="myFunction(this)"></td><td>DIAC14 05.01.006</td><td></td></tr><tr><td>45</td><td><B>008   |   EDGA</B></td><td><input type="button" value="Įkelti darbą" name="DIAC14 05.03.001 " onclick="myFunction(this)"></td><td>DIAC14 05.03.001</td><td></td></tr><tr><td>46</td><td><B>008   |   EDGA</B></td><td><input type="button" value="Įkelti darbą" name="DIAC14 03.00.009 " onclick="myFunction(this)"></td><td>DIAC14 03.00.009</td><td></td></tr><tr><td>47</td><td><B>006   |   AGKI</B></td><td><input type="button" value="Įkelti darbą" name="DMP-0006.03 " onclick="myFunction(this)"></td><td>DMP-0006.03</td><td> Linkedln</td></tr><tr><td>48</td><td><B>006   |   AGKI</B></td><td><input type="button" value="Įkelti darbą" name=" linkedln  " onclick="myFunction(this)"></td><td> linkedln </td><td>DMP-0006.03</td></tr><tr><td>49</td><td><B>006   |   AGKI</B></td><td><input type="button" value="Įkelti darbą" name="DMP-0006.02 " onclick="myFunction(this)"></td><td>DMP-0006.02</td><td>tidio chatpayserra</td></tr><tr><td>50</td><td><B>008   |   EDGA</B></td><td><input type="button" value="Įkelti darbą" name="DTI-0006.04 " onclick="myFunction(this)"></td><td>DTI-0006.04</td><td>Valcavimo staklių gamyba</td></tr></table> <br>
+
+
+  
+
+
+        </body>
+		
+
+
+    </html>
